@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Detection</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-top: 50px;
+        }
+
+        #image-preview {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        #result {
+            margin-top: 30px;
+        }
+
+        .action-button {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #45a049;
+        }
+
+        .action-button:active {
+            background-color: #3c893d;
+        }
+
+        #suggestions {
+            margin-top: 20px;
+            list-style-type: none;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .suggestion-item {
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        #solution {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kitchen's Pal Food Detection</h1>
+
+    <input type="file" id="image-input" accept="image/*">
+    <div id="image-preview"></div>
+
+    <button id="predict-button" class="action-button" disabled>Predict</button>
+
+    <div id="result"></div>
+
+    <ul id="suggestions"></ul>
+
+    <button id="view-button" class="action-button" style="display: none;">Lihat Cara Penyimpanan</button>
+
+    <div id="solution" style="display: none;"></div>
+
+    <script>
+        const imageInput = document.getElementById('image-input');
+        const imagePreview = document.getElementById('image-preview');
+        const predictButton = document.getElementById('predict-button');
+        const resultDiv = document.getElementById('result');
+        const viewButton = document.getElementById('view-button');
+        const suggestionsList = document.getElementById('suggestions');
+        const solutionDiv = document.getElementById('solution');
+        const fruitNames = {
+            0: 'apple',
+            1: 'banana',
+            2: 'beetroot',
+            3: 'bell pepper',
+            4: 'cabbage',
+            5: 'capsicum',
+            6: 'carrot',
+            7: 'cauliflower',
+            8: 'chilli pepper',
+            9: 'corn',
+            10: 'cucumber',
+            11: 'eggplant',
+            12: 'garlic',
+            13: 'ginger',
+            14: 'grapes',
+            15: 'jalapeno',
+            16: 'kiwi',
+            17: 'lemon',
+            18: 'lettuce',
+            19: 'mango',
+            20: 'onion',
+            21: 'orange',
+            22: 'paprika',
+            23: 'pear',
+            24: 'peas',
+            25: 'pineapple',
+            26: 'pomegranate',
+            27: 'potato',
+            28: 'radish',
+            29: 'soy beans',
+            30: 'spinach',
+            31: 'sweetcorn',
+            32: 'sweetpotato',
+            33: 'tomato',
+            34: 'turnip',
+            35: 'watermelon'
+        };
+
+        imageInput.addEventListener('change', () => {
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const image = document.createElement('img');
+                image.src = e.target.result;
+                imagePreview.innerHTML = '';
+                imagePreview.appendChild(image);
+                predictButton.disabled = false;
+                viewButton.style.display = 'none';
+                resultDiv.innerHTML = '';
+                suggestionsList.innerHTML = '';
+                solutionDiv.style.display = 'none';
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        predictButton.addEventListener('click', () => {
+            // Logika untuk melakukan prediksi objek
+            resultDiv.innerHTML = 'Menganalisis...';
+            suggestionsList.innerHTML = '';
+
+            // Simulasi hasil prediksi
+            setTimeout(() => {
+                const prediction = Math.floor(Math.random() * 36); // Angka acak dari 0 hingga 35
+                const fruitName = fruitNames[prediction];
+                resultDiv.innerHTML = `Objek terdeteksi: ${fruitName}`;
+
+                if (fruitName) {
+            viewButton.style.display = 'inline-block';
+            viewButton.onclick = () => {
+                const fruitSolution = getFruitSolution(fruitName);
+                if (fruitSolution) {
+                    solutionDiv.innerHTML = `Cara penyimpanan ${fruitName}: ${fruitSolution}`;
+                    solutionDiv.style.display = 'block';
+                }
+            };
+        }
+     }, 2000);
+    });
+
+    viewButton.addEventListener('click', () => {
+        const selectedFruitElement = document.querySelector('#suggestions .suggestion-item.selected');
+        if (selectedFruitElement) {
+            const selectedFruit = selectedFruitElement.textContent;
+            const fruitSolution = getFruitSolution(selectedFruit);
+            if (fruitSolution) {
+                solutionDiv.innerHTML = `Cara penyimpanan ${selectedFruit}: ${fruitSolution}`;
+                solutionDiv.style.display = 'block';
+        }
+    }
+});
+
+// Fungsi untuk mendapatkan teks cara penyimpanan berdasarkan nama buah
+function getFruitSolution(fruitName) {
+    // Implementasikan logika Anda di sini
+    // Misalnya, Anda dapat menggunakan objek atau database untuk mencocokkan nama buah dengan teks cara penyimpanan yang sesuai.
+    const fruitSolutions = {
+        apple: 'Simpan apel di dalam kulkas pada suhu 4-6 derajat Celsius.',
+        banana: 'Simpan pisang di suhu ruangan pada tempat yang kering dan tidak terkena sinar matahari langsung.',
+        beetroot: 'Simpan bit di dalam kulkas pada suhu 0-4 derajat Celsius.',
+        'bell pepper': 'Simpan paprika di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        cabbage: 'Simpan kol di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        capsicum: 'Simpan paprika di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        carrot: 'Simpan wortel di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah berisi air.',
+        cauliflower: 'Simpan bunga kol di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        'chilli pepper': 'Simpan cabai di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        corn: 'Simpan jagung di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        cucumber: 'Simpan mentimun di dalam kulkas pada suhu 8-10 derajat Celsius.',
+        eggplant: 'Simpan terong di dalam kulkas pada suhu 8-10 derajat Celsius.',
+        garlic: 'Simpan bawang putih di tempat yang kering dan berventilasi.',
+        ginger: 'Simpan jahe di dalam kulkas pada suhu 8-10 derajat Celsius.',
+        grapes: 'Simpan anggur di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        jalapeno: 'Simpan jalapeno di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        kiwi: 'Simpan kiwi di dalam kulkas pada suhu 0-4 derajat Celsius.',
+        lemon: 'Simpan lemon di suhu ruangan pada tempat yang kering dan tidak terkena sinar matahari langsung.',
+        lettuce: 'Simpan selada di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        mango: 'Simpan mangga di suhu ruangan hingga matang, kemudian simpan di dalam kulkas pada suhu 8-10 derajat Celsius.',
+        onion: 'Simpan bawang merah dan bawang putih di tempat yang kering dan berventilasi terpisah dari buah-buahan lain.',
+        orange: 'Simpan jeruk di dalam kulkas pada suhu 8-10 derajat Celsius.',
+        paprika: 'Simpan paprika di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        pear: 'Simpan pir di dalam kulkas pada suhu 2-4 derajat Celsius dalam wadah kedap udara.',
+        peas: 'Simpan kacang polong di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        pineapple: 'Simpan nanas di dalam kulkas pada suhu 4-6 derajat Celsius dalam wadah kedap udara.',
+        pomegranate: 'Simpan delima di dalam kulkas pada suhu 2-4 derajat Celsius.',
+        potato: 'Simpan kentang di tempat yang sejuk, gelap, dan kering.',
+        radish: 'Simpan lobak di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        'soy beans': 'Simpan kacang kedelai di tempat yang kering dan sejuk.',
+        spinach: 'Simpan bayam di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        sweetcorn: 'Simpan jagung manis di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        sweetpotato: 'Simpan ubi jalar di tempat yang sejuk, gelap, dan kering.',
+        tomato: 'Simpan tomat di suhu ruangan pada tempat yang kering dan tidak terkena sinar matahari langsung.',
+        turnip: 'Simpan lobak di dalam kulkas pada suhu 0-4 derajat Celsius dalam wadah kedap udara.',
+        watermelon: 'Simpan semangka di suhu ruangan pada tempat yang sejuk dan kering.',
+        // Tambahkan buah lainnya dengan teks cara penyimpanan yang sesuai
+    };
+
+    return fruitSolutions[fruitName];
+}
+
+
+    </script>
+</body>
+</html>
